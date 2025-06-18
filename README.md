@@ -61,7 +61,7 @@ Le fichier `.xlsx` doit contenir une feuille avec les colonnes suivantes :
 │ ├── utils.js
 │ └── export.js
 ├── assets/
-│ └── ???
+│ └── preview.png
 └── README.md
 ```
 
