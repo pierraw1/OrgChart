@@ -69,8 +69,6 @@ Le fichier `.xlsx` doit contenir une feuille avec les colonnes suivantes :
 
 ## 📦 Lancer le projet
 
-## 📦 Lancer le projet
-
 1. Clone le repo ou télécharge les fichiers :
    ```bash
    git clone https://github.com/votre-utilisateur/organigramme-interactif.git
