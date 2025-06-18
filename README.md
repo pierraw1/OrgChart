@@ -71,7 +71,7 @@ Le fichier `.xlsx` doit contenir une feuille avec les colonnes suivantes :
 
 1. Clone le repo ou télécharge les fichiers :
    ```bash
-   git clone https://github.com/votre-utilisateur/organigramme-interactif.git
+   git clone https://github.com/pierraw1/OrgChart.git
    ```
 
 2. Ouvre `index.html` dans ton navigateur. C’est tout !
