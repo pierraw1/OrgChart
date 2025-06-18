@@ -1,65 +1,48 @@
-body {
-    font-family: "Segoe UI", sans-serif;
-    margin: 0;
-    background: #f7f9fb;
-  }
-  
-  header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 1rem;
+/* 🎯 Titre */
+.main-title {
     text-align: center;
-  }
-  
-  main {
-    padding: 2rem;
-  }
-  
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
+    font-size: 1.8rem;
     margin-bottom: 1.5rem;
+    font-weight: 600;
   }
   
-  select, input[type="file"], button {
-    padding: 0.5rem;
-    font-size: 1rem;
+  /* 📦 Bandeau de contrôle */
+  .control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 1rem;
+    background: #e6f0f8;
+    border-radius: 8px;
+    margin-bottom: 1.8rem;
+    flex-wrap: wrap;
   }
   
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background: #3498db;
-    color: white;
-    transition: background 0.3s;
+  /* 🧱 Bloc individuel */
+  .control-block {
+    flex: 1 1 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 220px;
   }
   
-  button:hover {
-    background: #2980b9;
+  /* 🎛 Champs compacts */
+  .control-block input,
+  .control-block select,
+  .control-block button {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
   }
   
-  #chart_div {
-    overflow-x: auto;
-  }
-  
-  .node {
-    font-size: 12px;
-    text-align: center;
-  }
-  .options {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .options label {
-    margin-right: 1rem;
-  }
-  
+  /* 📝 Sous-options */
   #infoOptions {
-    margin-top: 0.3rem;
-    margin-left: 1.5rem;
+    margin-left: 1rem;
+  }
+  
+  #infoOptions label {
+    font-size: 13px;
+    margin-right: 0.8rem;
   }
   

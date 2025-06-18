@@ -1,67 +1,110 @@
+// 📊 Chargement de Google Charts
 google.charts.load("current", { packages: ["orgchart"] });
 let originalData = [];
 
-document.getElementById("fileInput").addEventListener("change", handleFile);
-document
-  .getElementById("serviceSelect")
-  .addEventListener("change", filterAndDraw);
-document.getElementById("exportPngBtn").addEventListener("click", exportToPNG);
-document.getElementById("exportPdfBtn").addEventListener("click", exportToPDF);
-document.getElementById("exportSvgBtn").addEventListener("click", exportToSVG);
-document
-  .getElementById("toggleDetails")
-  .addEventListener("change", drawOrgChart);
-document.getElementById("optPoste").addEventListener("change", drawOrgChart);
-document.getElementById("optEmail").addEventListener("change", drawOrgChart);
-document.getElementById("optTel").addEventListener("change", drawOrgChart);
+// 🧱 Raccourcis DOM
+const fileInput = document.getElementById("fileInput");
+const serviceSelect = document.getElementById("serviceSelect");
+const resetBtn = document.getElementById("resetBtn");
+const toggleDetails = document.getElementById("toggleDetails");
+const optPoste = document.getElementById("optPoste");
+const optEmail = document.getElementById("optEmail");
+const optTel = document.getElementById("optTel");
+const exportPngBtn = document.getElementById("exportPngBtn");
+const exportJpgBtn = document.getElementById("exportJpgBtn");
+const exportPdfBtn = document.getElementById("exportPdfBtn");
 
-document.getElementById("resetBtn").addEventListener("click", () => {
-  localStorage.removeItem("orgchartData");
-  location.reload();
-});
+// 📌 Événements
+fileInput.addEventListener("change", handleFile);
+serviceSelect.addEventListener("change", filterAndDraw);
+resetBtn.addEventListener("click", resetData);
 
-google.charts.setOnLoadCallback(() => {
-  console.log("Google Charts prêt.");
-});
+[toggleDetails, optPoste, optEmail, optTel].forEach((el) =>
+  el.addEventListener("change", () => drawOrgChart())
+);
 
+exportPngBtn.addEventListener("click", () => exportAsImage("png"));
+exportJpgBtn.addEventListener("click", () => exportAsImage("jpeg"));
+exportPdfBtn.addEventListener("click", exportToPDF);
+
+// 🟢 Charts prêt
 window.addEventListener("DOMContentLoaded", () => {
   const stored = localStorage.getItem("orgchartData");
-  if (stored) {
-    const data = JSON.parse(stored);
-    loadDataAndDraw(data);
-  }
+  google.charts.setOnLoadCallback(() => {
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        loadDataAndDraw(data);
+      } catch (err) {
+        console.warn(
+          "Erreur lors du chargement des données sauvegardées.",
+          err
+        );
+      }
+    }
+  });
 });
+
+// 📂 Gérer l'import Excel
 function handleFile(event) {
   const file = event.target.files[0];
+  if (!file || !file.name.endsWith(".xlsx")) {
+    alert("Veuillez sélectionner un fichier Excel (.xlsx)");
+    return;
+  }
+
   const reader = new FileReader();
-
   reader.onload = function (e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = XLSX.utils.sheet_to_json(sheet);
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-    localStorage.setItem("orgchartData", JSON.stringify(jsonData));
-    loadDataAndDraw(jsonData);
+      localStorage.setItem("orgchartData", JSON.stringify(jsonData));
+      loadDataAndDraw(jsonData);
+    } catch (error) {
+      alert("Erreur lors de la lecture du fichier.");
+      console.error(error);
+    }
   };
-
   reader.readAsArrayBuffer(file);
 }
 
+// 🧼 Réinitialiser les données
+function resetData() {
+  localStorage.removeItem("orgchartData");
+
+  const newInput = fileInput.cloneNode(true);
+  fileInput.parentNode.replaceChild(newInput, fileInput);
+  newInput.addEventListener("change", handleFile);
+
+  location.reload();
+}
+
+// 🎯 Charge les services et affiche
+function loadDataAndDraw(data) {
+  originalData = data;
+  populateServiceOptions(originalData);
+  filterAndDraw();
+}
+
+// 🧠 Générer options de service
 function populateServiceOptions(data) {
-  const select = document.getElementById("serviceSelect");
   const services = getUniqueServices(data);
-  select.innerHTML = '<option value="TOUS">-- Tous les services --</option>';
+  serviceSelect.innerHTML =
+    '<option value="TOUS">-- Tous les services --</option>';
   services.forEach((service) => {
     const option = document.createElement("option");
     option.value = service;
     option.textContent = service;
-    select.appendChild(option);
+    serviceSelect.appendChild(option);
   });
 }
 
+// 🔍 Appliquer le filtre de service
 function filterAndDraw() {
-  const selectedService = document.getElementById("serviceSelect").value;
+  const selectedService = serviceSelect.value;
   const filtered =
     selectedService === "TOUS"
       ? originalData
@@ -70,12 +113,28 @@ function filterAndDraw() {
   drawOrgChart(filtered);
 }
 
-function drawOrgChart(data) {
+// 🖼 Affichage de l'organigramme
+function drawOrgChart(data = null) {
+  if (!originalData || originalData.length === 0) return;
+
+  const selectedService = serviceSelect.value;
+  const source =
+    data ||
+    (selectedService === "TOUS"
+      ? originalData
+      : filterByService(originalData, selectedService));
+
+  if (!Array.isArray(source) || source.length === 0) {
+    document.getElementById("chart_div").innerHTML =
+      "<p style='text-align:center; color:#888;'>Aucune donnée à afficher.</p>";
+    return;
+  }
+
   const dataTable = new google.visualization.DataTable();
   dataTable.addColumn("string", "Name");
   dataTable.addColumn("string", "Manager");
 
-  data.forEach((row) => {
+  source.forEach((row) => {
     const html = formatNode(row);
     dataTable.addRow([{ v: row.Nom, f: html }, row.Manager || ""]);
   });
@@ -84,11 +143,4 @@ function drawOrgChart(data) {
     document.getElementById("chart_div")
   );
   chart.draw(dataTable, { allowHtml: true });
-}
-
-
-function loadDataAndDraw(data) {
-  originalData = data;
-  populateServiceOptions(originalData);
-  filterAndDraw();
 }
