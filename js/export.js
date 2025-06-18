@@ -1,31 +1,35 @@
 function exportAsImage(format = "png") {
-  const chart = document.getElementById("chart_div");
+  const chartContainer = document.getElementById("chart_div");
 
-  html2canvas(chart, {
+  // Mesurer toute la zone du contenu réel
+  const originalWidth = chartContainer.scrollWidth;
+  const originalHeight = chartContainer.scrollHeight;
+
+  html2canvas(chartContainer, {
+    backgroundColor: format === "png" ? null : "#ffffff",
+    width: originalWidth,
+    height: originalHeight,
     scale: 3,
-    backgroundColor: format === "png" ? null : "#ffffff", // fond transparent uniquement pour PNG
     useCORS: true,
   }).then((canvas) => {
-    const margin = 30; // pixels de marge
+    const margin = 30;
 
-    // 🔁 Créer un canvas élargi avec marge blanche
-    const extendedCanvas = document.createElement("canvas");
-    extendedCanvas.width = canvas.width + margin * 2;
-    extendedCanvas.height = canvas.height + margin * 2;
+    const finalCanvas = document.createElement("canvas");
+    finalCanvas.width = canvas.width + margin * 2;
+    finalCanvas.height = canvas.height + margin * 2;
 
-    const ctx = extendedCanvas.getContext("2d");
+    const ctx = finalCanvas.getContext("2d");
 
-    // Appliquer fond blanc si JPEG
     if (format === "jpeg") {
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, extendedCanvas.width, extendedCanvas.height);
+      ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
     }
 
     ctx.drawImage(canvas, margin, margin);
 
     const link = document.createElement("a");
     link.download = `organigramme.${format === "jpeg" ? "jpg" : "png"}`;
-    link.href = extendedCanvas.toDataURL(`image/${format}`, 1.0);
+    link.href = finalCanvas.toDataURL(`image/${format}`, 1.0);
     link.click();
   });
 }
@@ -33,7 +37,12 @@ function exportAsImage(format = "png") {
 function exportToPDF() {
   const chart = document.getElementById("chart_div");
 
+  const originalWidth = chart.scrollWidth;
+  const originalHeight = chart.scrollHeight;
+
   html2canvas(chart, {
+    width: originalWidth,
+    height: originalHeight,
     scale: 3,
     backgroundColor: "#ffffff",
   }).then((canvas) => {
@@ -44,7 +53,6 @@ function exportToPDF() {
       format: "a4",
     });
 
-    const imgData = canvas.toDataURL("image/png");
     const pageWidth = 297;
     const pageHeight = 210;
     const margin = 10;
@@ -52,7 +60,9 @@ function exportToPDF() {
     const imgWidth = pageWidth - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+    const imgData = canvas.toDataURL("image/png");
     pdf.addImage(imgData, "PNG", margin, margin, imgWidth, imgHeight);
     pdf.save("organigramme.pdf");
   });
 }
+  
