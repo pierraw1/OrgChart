@@ -1,0 +1,65 @@
+body {
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    background: #f7f9fb;
+  }
+  
+  header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  main {
+    padding: 2rem;
+  }
+  
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  select, input[type="file"], button {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background: #3498db;
+    color: white;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background: #2980b9;
+  }
+  
+  #chart_div {
+    overflow-x: auto;
+  }
+  
+  .node {
+    font-size: 12px;
+    text-align: center;
+  }
+  .options {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .options label {
+    margin-right: 1rem;
+  }
+  
+  #infoOptions {
+    margin-top: 0.3rem;
+    margin-left: 1.5rem;
+  }
+  
